@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+struct Storage{
+    let googleMapApiKey = "AIzaSyD1o5g6yXKIzXeq9XdzzEcA6EH338lgidE"
+}
