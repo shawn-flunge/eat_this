@@ -24,15 +24,30 @@ class _HomeScreenState extends State<HomeScreen> {
     temp();
   }
 
+  Offset my = Offset(0,0);
+
   temp() async{
-    bool enabled = await Geolocator.isLocationServiceEnabled();
-    if(!enabled){
-      print('service disabled');
-    }
-    LocationPermission permission = await Geolocator.checkPermission();
-    if(permission == LocationPermission.denied){
-      print('permission denied');
-    }
+    // LocationPermission permission =  await Geolocator.requestPermission();
+
+    // LocationPermission permission = await Geolocator.checkPermission();
+    // print(permission);
+
+
+    bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    print(isLocationServiceEnabled);
+    await Geolocator.checkPermission();
+    await Geolocator.requestPermission();
+
+    // bool enabled = await Geolocator.isLocationServiceEnabled();
+    // if(!enabled){
+    //   print('service disabled');
+    //   Geolocator.requestPermission();
+    // }
+    // LocationPermission permission = await Geolocator.checkPermission();
+    // if(permission == LocationPermission.denied){
+    //   print('permission denied');
+    // }
 
   }
 
@@ -59,12 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return earthRadius * c;
   }
 
-  getLatLngsByDistance(double distance){
-
-    const double angle1 = 315;
-    const double angle2 = 135;
-  }
-
 
   temp1() async{
     LatLngBounds? latLng = await _googleMapController?.getVisibleRegion();
@@ -79,6 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     print(position.toString());
 
+    print(await _googleMapController!.getVisibleRegion());
+
+
     
     setState(() {
       LatLng newLatLng = LatLng(position.latitude, position.longitude);
@@ -89,18 +101,52 @@ class _HomeScreenState extends State<HomeScreen> {
   LatLng latLng = const LatLng(37.52627236692194, 126.93512036745244);
   GoogleMapController? _googleMapController;
 
-  void _onMapCreated(GoogleMapController controller){
+  void _onMapCreated(GoogleMapController controller) async{
     _googleMapController = controller;
+
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    print(position.toString());
+
+
+
+    double screenWidth = MediaQuery.of(context).size.width *
+        MediaQuery.of(context).devicePixelRatio;
+    double screenHeight = MediaQuery.of(context).size.height *
+        MediaQuery.of(context).devicePixelRatio;
+
+    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+
+    double middleX = screenWidth / 2;
+    double middleY = screenHeight / 2;
+
+    final ScreenCoordinate sc = await _googleMapController!.getScreenCoordinate(latLng);
+    print('${sc} // $pixelRatio');
+
+    my = Offset(sc.x.toDouble() / 10, sc.y.toDouble() / 10);
+
+    setState(() {
+      LatLng newLatLng = LatLng(position.latitude, position.longitude);
+      _googleMapController?.moveCamera(CameraUpdate.newLatLng(newLatLng));
+    });
   }
 
   void _onTap(LatLng latLng) async{
 
-    // Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    //
-    // final double distance = distanceBetween(position.latitude, position.longitude, latLng.latitude, latLng.longitude);
-    // print(distance);
-    // temp1();
-    temp();
+    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+    final newLatlng = LatLng(position.latitude, position.longitude);
+    final ScreenCoordinate sc = await _googleMapController!.getScreenCoordinate(newLatlng);
+
+
+    print('$position // $pixelRatio');
+
+    my = Offset(sc.x.toDouble() - 15, sc.y.toDouble()-15);
+
+    setState(() {
+      LatLng newLatLng = LatLng(position.latitude, position.longitude);
+      // _googleMapController?.moveCamera(CameraUpdate.newLatLng(newLatLng));
+    });
   }
 
 
@@ -109,35 +155,62 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '이거 먹어'
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: const Text(
+      //     '이거 먹어'
+      //   ),
+      // ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           // temp();
           getCurrentPosition();
         },
       ),
-      body: Column(
+      body: Stack(
         children: <Widget>[
-          SizedBox(
-            width: double.infinity,
-            height: 400,
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: latLng,
-                tilt: 0,
-                zoom: 17,
-                bearing: 0,
-              ),
-              buildingsEnabled: false,
-              myLocationEnabled: true,
-              onMapCreated: _onMapCreated,
-              onTap: _onTap,
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: latLng,
+              tilt: 0,
+              zoom: 17,
+              bearing: 0,
             ),
+            zoomControlsEnabled: false,
+            myLocationButtonEnabled: false,
+            mapToolbarEnabled: false,
+            compassEnabled: false,
+            liteModeEnabled: false,
+            buildingsEnabled: false,
+
+
+            // 핀 위젯 만들면 이거 false로
+            myLocationEnabled: true,
+
+
+            onMapCreated: _onMapCreated,
+            onTap: _onTap,
+          ),
+
+          const Positioned(
+            top: 50,
+            left: 20,
+            child: Text(
+              'Eat this!',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue
+              ),
+            ),
+          ),
+          Positioned(
+            left: my.dx,
+            top: my.dy,
+            child: Container(width: 30, height: 30, color: Colors.red,)
           )
+
+
+
 
         ],
       ),
