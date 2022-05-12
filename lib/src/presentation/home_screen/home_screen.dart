@@ -1,7 +1,4 @@
 
-
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -149,17 +146,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(
-      //     '이거 먹어'
-      //   ),
-      // ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           // temp();
@@ -181,16 +170,25 @@ class _HomeScreenState extends State<HomeScreen> {
             compassEnabled: false,
             liteModeEnabled: false,
             buildingsEnabled: false,
-
-
-            // 핀 위젯 만들면 이거 false로
-            myLocationEnabled: true,
-
-
+            myLocationEnabled: false,
+            onCameraMove: (cameraUpdate) async{
+              Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+              final newLatlng = LatLng(position.latitude, position.longitude);
+              final ScreenCoordinate sc = await _googleMapController!.getScreenCoordinate(newLatlng);
+              setState(() {
+                my = Offset(sc.x.toDouble() - 15, sc.y.toDouble()-15);
+              });
+            },
             onMapCreated: _onMapCreated,
             onTap: _onTap,
           ),
-
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInCubic,
+            left: my.dx,
+            top: my.dy,
+            child: Container(width: 30, height: 30, color: Colors.red,),
+          ),
           const Positioned(
             top: 50,
             left: 20,
@@ -203,15 +201,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          Positioned(
-            left: my.dx,
-            top: my.dy,
-            child: Container(width: 30, height: 30, color: Colors.red,)
-          )
-
-
-
-
         ],
       ),
     );
