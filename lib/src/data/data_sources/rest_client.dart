@@ -11,5 +11,5 @@ abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
   @GET('/api/v1/locations/circe?lat={lat}&lng={lng}&radius={radius}')
-  Future<dynamic> getRestaurants(@Path() double lat, @Path() double lng, @Path() int radius);
+  Future<dynamic> getRestaurantsWithinCircle(@Path() double lat, @Path() double lng, @Path() int radius);
 }

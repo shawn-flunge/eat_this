@@ -19,7 +19,7 @@ class _RestClient implements RestClient {
   String? baseUrl;
 
   @override
-  Future<dynamic> getRestaurants(lat, lng, radius) async {
+  Future<dynamic> getRestaurantsWithinCircle(lat, lng, radius) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
