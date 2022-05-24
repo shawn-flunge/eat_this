@@ -1,4 +1,5 @@
 
+import 'package:eat_this/src/data/models/restaurant.dart';
 import 'package:eat_this/src/data/repositories/repository_impl_frame.dart';
 import 'package:eat_this/src/domain/repositories/restaurant_repository.dart';
 
@@ -15,6 +16,8 @@ class RestaurantRepositoryImpl extends RepositoryImplFrame with RestaurantReposi
   Future getRestaurantsWithinCircle({required double lat, required double lng, required int radius}) async{
     try{
       final response = await restClient.getRestaurantsWithinCircle(lat, lng, radius);
+      List<Restaurant> result = response.map((e) => Restaurant.fromJson(e)).toList().cast<Restaurant>();
+      return result;
     } catch(error){
       print(error);
     }

@@ -8,5 +8,5 @@ void repositoriesInjection(){
   Dio dio = Dio();
   RestClient restClient = RestClient(dio);
 
-  RestaurantRepositoryImpl().init(restClient: restClient);
+  RestaurantRepositoryImpl().init(restClientParam: restClient);
 }
