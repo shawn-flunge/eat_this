@@ -16,7 +16,7 @@ _$_Restaurant _$$_RestaurantFromJson(Map<String, dynamic> json) =>
       distance: json['distance'] as String,
       phoneNumber: json['phoneNumber'] as String,
       placeCategory:
-          PlaceCategory.fromJson(json['placeCategory'] as Map<String, dynamic>),
+          PlaceCategory.fromJson(json['category'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$_RestaurantToJson(_$_Restaurant instance) =>
@@ -28,5 +28,5 @@ Map<String, dynamic> _$$_RestaurantToJson(_$_Restaurant instance) =>
       'lat': instance.lat,
       'distance': instance.distance,
       'phoneNumber': instance.phoneNumber,
-      'placeCategory': instance.placeCategory,
+      'category': instance.placeCategory,
     };

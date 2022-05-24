@@ -27,6 +27,7 @@ mixin _$Restaurant {
   String get lat => throw _privateConstructorUsedError;
   String get distance => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
+  @JsonKey(name: 'category')
   PlaceCategory get placeCategory => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,7 +49,7 @@ abstract class $RestaurantCopyWith<$Res> {
       String lat,
       String distance,
       String phoneNumber,
-      PlaceCategory placeCategory});
+      @JsonKey(name: 'category') PlaceCategory placeCategory});
 
   $PlaceCategoryCopyWith<$Res> get placeCategory;
 }
@@ -131,7 +132,7 @@ abstract class _$$_RestaurantCopyWith<$Res>
       String lat,
       String distance,
       String phoneNumber,
-      PlaceCategory placeCategory});
+      @JsonKey(name: 'category') PlaceCategory placeCategory});
 
   @override
   $PlaceCategoryCopyWith<$Res> get placeCategory;
@@ -206,7 +207,7 @@ class _$_Restaurant implements _Restaurant {
       required this.lat,
       required this.distance,
       required this.phoneNumber,
-      required this.placeCategory});
+      @JsonKey(name: 'category') required this.placeCategory});
 
   factory _$_Restaurant.fromJson(Map<String, dynamic> json) =>
       _$$_RestaurantFromJson(json);
@@ -226,6 +227,7 @@ class _$_Restaurant implements _Restaurant {
   @override
   final String phoneNumber;
   @override
+  @JsonKey(name: 'category')
   final PlaceCategory placeCategory;
 
   @override
@@ -284,7 +286,8 @@ abstract class _Restaurant implements Restaurant {
       required final String lat,
       required final String distance,
       required final String phoneNumber,
-      required final PlaceCategory placeCategory}) = _$_Restaurant;
+      @JsonKey(name: 'category')
+          required final PlaceCategory placeCategory}) = _$_Restaurant;
 
   factory _Restaurant.fromJson(Map<String, dynamic> json) =
       _$_Restaurant.fromJson;
@@ -304,6 +307,7 @@ abstract class _Restaurant implements Restaurant {
   @override
   String get phoneNumber => throw _privateConstructorUsedError;
   @override
+  @JsonKey(name: 'category')
   PlaceCategory get placeCategory => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)

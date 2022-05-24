@@ -15,7 +15,7 @@ class Restaurant with _$Restaurant{
     required String lat,
     required String distance,
     required String phoneNumber,
-    required PlaceCategory placeCategory
+    @JsonKey(name: 'category')required PlaceCategory placeCategory
   }) = _Restaurant;
 
   factory Restaurant.fromJson(Map<String, dynamic> json) =>_$RestaurantFromJson(json);
