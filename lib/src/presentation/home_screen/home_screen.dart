@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:eat_this/src/data/models/restaurant.dart';
 import 'package:eat_this/src/data/repositories/restaurant_repository_impl.dart';
-import 'package:eat_this/src/presentation/introducing_restaurant_screen.dart';
+import 'package:eat_this/src/presentation/home_screen/home_screen_controller.dart';
+import 'package:eat_this/src/presentation/home_screen/widgets/my_location_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -26,7 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
     temp();
     setInitialLatLng();
     _setTextField();
+    controller = HomeScreenController();
   }
+
+  late HomeScreenController controller;
 
   Offset my = Offset(0,0);
 
@@ -332,13 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: <Widget>[
           GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: latLng,
-              tilt: 0,
-              zoom: 17,
-              bearing: 0,
-            ),
-            markers: markers.toSet(),
+            initialCameraPosition: controller.initCameraPosition,
             zoomControlsEnabled: false,
             myLocationButtonEnabled: false,
             mapToolbarEnabled: false,
@@ -346,30 +344,13 @@ class _HomeScreenState extends State<HomeScreen> {
             liteModeEnabled: false,
             buildingsEnabled: false,
             myLocationEnabled: false,
-            onCameraMove: (cameraUpdate) => moveMyLocationButton(),
-            // onCameraMove: (cameraUpdate) async{
-            //   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-            //   final newLatlng = LatLng(position.latitude, position.longitude);
-            //   final ScreenCoordinate sc = await _googleMapController!.getScreenCoordinate(newLatlng);
-            //   setState(() {
-            //     my = Offset(sc.x.toDouble() - 15, sc.y.toDouble()-15);
-            //   });
-            // },
-            onMapCreated: _onMapCreated,
-            onTap: _onTap,
+            onMapCreated: (googleMapController){
+              final double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+              controller.onMapCreated(googleMapController, pixelRatio);
+            },
+            onCameraMove: controller.onCameraMove,
           ),
-          Positioned(
-            // duration: const Duration(milliseconds: 400),
-            // curve: Curves.easeInCubic,
-            left: my.dx,
-            top: my.dy,
-            child: Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.red,
-              ),
-              width: 30, height: 30, ),
-          ),
+          const MyLocationInScreen(),
           Positioned(
             right: 10,
             bottom: 100,
