@@ -367,7 +367,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ]
               ),
               child: InkWell(
-                onTap: getCurrentPosition,
+                // onTap: getCurrentPosition,
+                onTap: controller.onCurrentLocationButtonTap,
                 child: const Icon(
                   Icons.my_location,
                 ),
@@ -412,7 +413,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Expanded(child: SizedBox()),
 
                   InkWell(
-                    onTap: getRestaurant,
+                    // onTap: getRestaurant,
+                    onTap: controller.setRestaurants,
                     child: const Icon(
                       Icons.search
                     ),
