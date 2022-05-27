@@ -22,31 +22,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     temp();
-    setInitialLatLng();
     _setTextField();
     controller = HomeScreenController();
   }
 
   late HomeScreenController controller;
 
-  Offset my = Offset(0,0);
-
   temp() async{
-    // LocationPermission permission =  await Geolocator.requestPermission();
-
-    // LocationPermission permission = await Geolocator.checkPermission();
-    // print(permission);
-
-
     bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
 
     print(isLocationServiceEnabled);
     await Geolocator.checkPermission();
     await Geolocator.requestPermission();
-    getCurrentPosition();
 
     // bool enabled = await Geolocator.isLocationServiceEnabled();
     // if(!enabled){
@@ -84,99 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
-  temp1() async{
-    LatLngBounds? latLng = await _googleMapController?.getVisibleRegion();
-
-    print('bdfbdfbdfbdf $latLng');
-    print(distanceBetween(37.524570661913515, 126.93301364779471, 37.527973900886344, 126.93722706288098));
-  }
-
-
-  getCurrentPosition() async{
-
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-
-
-    setState(() {
-      moveMyLocationButton();
-      LatLng newLatLng = LatLng(position.latitude, position.longitude);
-      _googleMapController?.moveCamera(CameraUpdate.newLatLng(newLatLng));
-    });
-  }
-
-  setInitialLatLng() async{
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-
-    setState(() {
-      latLng = LatLng(position.latitude, position.longitude);
-    });
-  }
-
-  onCameraMove(CameraPosition cameraPosition) async{
-    moveMyLocationButton();
-  }
-
-  moveMyLocationButton() async{
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-
-    final double pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    final newLatlng = LatLng(position.latitude, position.longitude);
-    final ScreenCoordinate sc = await _googleMapController!.getScreenCoordinate(newLatlng);
-    setState(() {
-      if(Platform.isAndroid){
-        my = Offset(sc.x.toDouble()/pixelRatio - 15, sc.y.toDouble()/pixelRatio -15);
-      } else{
-        my = Offset(sc.x.toDouble() - 15, sc.y.toDouble()-15);
-      }
-
-    });
-  }
-
-
-
   LatLng latLng = const LatLng(37.52627236692194, 126.93512036745244);
   GoogleMapController? _googleMapController;
-
-  void _onMapCreated(GoogleMapController controller) async{
-    _googleMapController = controller;
-
-    getCurrentPosition();
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    print(position.toString());
-
-
-
-    double screenWidth = MediaQuery.of(context).size.width *
-        MediaQuery.of(context).devicePixelRatio;
-    double screenHeight = MediaQuery.of(context).size.height *
-        MediaQuery.of(context).devicePixelRatio;
-
-    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
-
-    double middleX = screenWidth / 2;
-    double middleY = screenHeight / 2;
-
-    final ScreenCoordinate sc = await _googleMapController!.getScreenCoordinate(latLng);
-    print('${sc} // $pixelRatio');
-
-    if(Platform.isAndroid){
-      my = Offset(sc.x.toDouble() / 10, sc.y.toDouble() / 10);
-    } else{
-      my = Offset(sc.x.toDouble() / 10, sc.y.toDouble() / 10);
-    }
-
-
-
-    setState(() {
-      LatLng newLatLng = LatLng(position.latitude, position.longitude);
-      _googleMapController?.moveCamera(CameraUpdate.newLatLng(newLatLng));
-    });
-  }
-
-  void _onTap(LatLng latLng) async{
-
-    focusNode.unfocus();
-  }
 
 
   Restaurant? selectedRestaurant;
@@ -326,13 +224,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: (){
-      //     // temp();
-      //     // getCurrentPosition();
-      //     getRestaurant();
-      //   },
-      // ),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -367,7 +258,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ]
               ),
               child: InkWell(
-                // onTap: getCurrentPosition,
                 onTap: controller.onCurrentLocationButtonTap,
                 child: const Icon(
                   Icons.my_location,
@@ -424,19 +314,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           )
-
-          // Positioned(
-          //   bottom: -400,
-          //   left: 0, right: 0,
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       shape: BoxShape.circle,
-          //       color: Colors.red
-          //     ),
-          //     height: diameter * 0.7,
-          //     width: diameter * 0.7,
-          //   ),
-          // )
         ],
       ),
     );
