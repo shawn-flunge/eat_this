@@ -1,6 +1,8 @@
 
+import 'dart:async';
 import 'dart:io';
 
+import 'package:eat_this/src/core/constants.dart';
 import 'package:eat_this/src/data/models/restaurant.dart';
 import 'package:eat_this/src/data/repositories/restaurant_repository_impl.dart';
 import 'package:eat_this/src/presentation/home_screen/home_screen_controller.dart';
@@ -224,22 +226,46 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: homeScreenScaffoldKey,
       body: Stack(
         children: <Widget>[
-          GoogleMap(
-            initialCameraPosition: controller.initCameraPosition,
-            zoomControlsEnabled: false,
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            compassEnabled: false,
-            liteModeEnabled: false,
-            buildingsEnabled: false,
-            myLocationEnabled: false,
-            onMapCreated: (googleMapController){
-              final double pixelRatio = MediaQuery.of(context).devicePixelRatio;
-              controller.onMapCreated(googleMapController, pixelRatio);
-            },
-            onCameraMove: controller.onCameraMove,
+          // GoogleMap(
+          //   initialCameraPosition: controller.initCameraPosition,
+          //   zoomControlsEnabled: false,
+          //   myLocationButtonEnabled: false,
+          //   mapToolbarEnabled: false,
+          //   compassEnabled: false,
+          //   liteModeEnabled: false,
+          //   buildingsEnabled: false,
+          //   myLocationEnabled: false,
+          //   markers: controller.markers.toSet(),
+          //   onMapCreated: (googleMapController){
+          //     final double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+          //     controller.onMapCreated(googleMapController, pixelRatio);
+          //   },
+          //   onCameraMove: controller.onCameraMove,
+          // ),
+          StreamBuilder<List<Marker>>(
+            stream: controller.markerStream.stream,
+            initialData: const [],
+            builder: (context, snapShot){
+              return GoogleMap(
+                initialCameraPosition: controller.initCameraPosition,
+                zoomControlsEnabled: false,
+                myLocationButtonEnabled: false,
+                mapToolbarEnabled: false,
+                compassEnabled: false,
+                liteModeEnabled: false,
+                buildingsEnabled: false,
+                myLocationEnabled: false,
+                markers: snapShot.data!.toSet(),
+                onMapCreated: (googleMapController){
+                  final double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+                  controller.onMapCreated(googleMapController, pixelRatio);
+                },
+                onCameraMove: controller.onCameraMove,
+              );
+            }
           ),
           const MyLocationInScreen(),
           Positioned(

@@ -5,7 +5,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-		<string>Eat This</string>
+		<string>이거먹자</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -43,11 +43,11 @@
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>This app needs access to location when open.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
-		<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-</dict>
+	</dict>
 </plist>
