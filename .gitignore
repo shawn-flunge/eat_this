@@ -30,6 +30,7 @@ pubspec.lock
 **/android/gradlew.bat
 **/android/key.properties
 **/android/local.properties
+**/android/proguard-rules.pro
 **/android/**/GeneratedPluginRegistrant.java
 
 # iOS/XCode related
