@@ -10,6 +10,7 @@ class EatThisApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       key: materialKey,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue
       ),
