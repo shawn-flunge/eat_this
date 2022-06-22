@@ -11,7 +11,7 @@ part of 'rest_client.dart';
 class _RestClient implements RestClient {
   _RestClient(this._dio, {this.baseUrl}) {
     baseUrl ??=
-        'http://eat-this-prod-313214315.ap-northeast-2.elb.amazonaws.com:8080';
+        'http://ec2-43-200-24-172.ap-northeast-2.compute.amazonaws.com:8080/';
   }
 
   final Dio _dio;

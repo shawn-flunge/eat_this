@@ -6,7 +6,7 @@ import 'package:retrofit/retrofit.dart';
 part 'rest_client.g.dart';
 
 // @RestApi(baseUrl: 'http://eat-this-dev-1952923402.ap-northeast-2.elb.amazonaws.com')
-@RestApi(baseUrl: 'http://eat-this-prod-313214315.ap-northeast-2.elb.amazonaws.com:8080')
+@RestApi(baseUrl: 'http://ec2-43-200-24-172.ap-northeast-2.compute.amazonaws.com:8080/')
 abstract class RestClient {
 
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
