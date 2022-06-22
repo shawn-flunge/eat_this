@@ -339,6 +339,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+          ),
+          Positioned(
+            left: 0,
+            bottom: 100,
+            child: MaterialButton(
+              color: Colors.black,
+              onPressed: (){
+                controller.callNewApi();
+              },
+            ),
           )
         ],
       ),

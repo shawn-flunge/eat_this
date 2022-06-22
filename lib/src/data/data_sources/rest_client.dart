@@ -13,4 +13,7 @@ abstract class RestClient {
 
   @GET('/locations/circle?lat={lat}&lng={lng}&radius={radius}')
   Future<dynamic> getRestaurantsWithinCircle(@Path() double lat, @Path() double lng, @Path() int radius);
+
+  @GET('/locations/circle/category?lat={lat}&lng={lng}&radius={radius}')
+  Future<dynamic> getRestaurantsSortedByCategory(@Path() double lat, @Path() double lng, @Path() int radius);
 }

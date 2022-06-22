@@ -61,6 +61,11 @@ class HomeScreenController with ChangeNotifier{
     googleMapController.moveCamera(CameraUpdate.newLatLng(latLng));
   }
 
+  callNewApi() async{
+    LatLng current = await _userLocationController.getCurrentPosition();
+    await _placeController.getSortedRestaurantsByCategory(lat: current.latitude, lng: current.longitude, radius: radius);
+  }
+
   final markers = <Marker>[];
 
   late Restaurant selectedRestaurant;

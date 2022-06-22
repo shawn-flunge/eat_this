@@ -22,5 +22,17 @@ class RestaurantRepositoryImpl extends RepositoryImplFrame with RestaurantReposi
       print(error);
     }
   }
+
+  @override
+  Future getRestaurantsSortedByCategory({required double lat, required double lng, required int radius}) async{
+    try{
+
+      final response = await restClient.getRestaurantsSortedByCategory(lat, lng, radius);
+      print(response);
+
+    } catch(error){
+      print(error);
+    }
+  }
 }
 
