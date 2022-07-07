@@ -5,13 +5,16 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:eat_this/src/core/constants.dart';
+import 'package:eat_this/src/core/mixin/result_popup_mixin.dart';
+import 'package:eat_this/src/data/models/category.dart';
 import 'package:eat_this/src/data/models/restaurant.dart';
 import 'package:eat_this/src/domain/controllers/place_controller.dart';
 import 'package:eat_this/src/domain/controllers/user_location_controller.dart';
+import 'package:eat_this/src/presentation/roulette.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class HomeScreenController with ChangeNotifier{
+class HomeScreenController with ChangeNotifier, ResultPopUpMixin{
 
   late GoogleMapController googleMapController;
   late UserLocationController _userLocationController;
@@ -30,7 +33,11 @@ class HomeScreenController with ChangeNotifier{
   late CameraPosition initCameraPosition;
   late double pixelRatio;
   int radius = 500;
-  // Offset myLocationInScreen = Offset(0,0);
+  bool isSelected = false;
+  StreamController<bool> isSelectedStream = StreamController<bool>();
+
+  final markers = <Marker>[];
+  late Restaurant selectedRestaurant;
 
   init(){
     _userLocationController = UserLocationController();
@@ -56,14 +63,59 @@ class HomeScreenController with ChangeNotifier{
     _setMyLocationButton(sc);
   }
 
+  onTap(LatLng latLng){
+    isSelectedStream.add(false);
+  }
+
   setCurrentLocation() async{
     LatLng latLng = await _userLocationController.getCurrentPosition();
     googleMapController.moveCamera(CameraUpdate.newLatLng(latLng));
   }
 
-  final markers = <Marker>[];
+  callNewApi() async{
+    LatLng current = await _userLocationController.getCurrentPosition();
+    final List<Category> categories = await _placeController.getSortedRestaurantsByCategory(lat: current.latitude, lng: current.longitude, radius: radius);
 
-  late Restaurant selectedRestaurant;
+    late AnimationController rouletteController;
+    final List<RouletteContent> contents = categories.map((e){
+      return RouletteContent(
+        piColor: _getRandomColor(),
+        label: e.categoryName,
+        textStyle: const TextStyle(
+          fontSize: 12,
+          color: Colors.black
+        )
+      );
+    }).toList();
+    int selectedIndex = 0;
+
+    final destination = await category(contents, categories, selectedIndex);
+    if(destination != null){
+      selectedRestaurant = destination;
+
+      final LatLng targetLatLng = LatLng(double.parse(selectedRestaurant.lat), double.parse(selectedRestaurant.lng));
+      markers.clear();
+      markers.add(
+          Marker(
+              markerId: MarkerId(selectedRestaurant.placeName),
+              position: targetLatLng,
+
+          )
+      );
+      markerStream.add(
+          [
+            Marker(
+                markerId: MarkerId(selectedRestaurant.placeName),
+                position: targetLatLng
+            )
+          ]
+      );
+      googleMapController.animateCamera(CameraUpdate.newLatLng(targetLatLng));
+      isSelectedStream.add(true);
+      notifyListeners();
+    }
+  }
+
   setRestaurants() async{
     LatLng current = await _userLocationController.getCurrentPosition();
     await _placeController.setRestaurants(lat: current.latitude, lng: current.longitude, radius: radius);
@@ -71,93 +123,8 @@ class HomeScreenController with ChangeNotifier{
     if(_placeController.restaurants.isNotEmpty){
 
       final int randomIndex = math.Random().nextInt(_placeController.restaurants.length);
-      // showDialog(
-      //   context: homeScreenScaffoldKey.currentContext!,
-      //   builder: (context){
-      //     return Dialog(
-      //       child: Text('sex'),
-      //     );
-      //   }
-      // );
       selectedRestaurant = _placeController.restaurants[randomIndex];
-
-      final destination = await showDialog<Restaurant>(
-          context: homeScreenScaffoldKey.currentContext!,
-          builder: (BuildContext dialogueContext){
-
-            return Dialog(
-              child: SizedBox(
-                height: 200,
-                child: StatefulBuilder(
-                  builder: (builderContext, setStateDialogue){
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          selectedRestaurant.placeName,
-                          style: const TextStyle(
-                            fontSize: 24
-                          ),
-                        ),
-                        Text(
-                          selectedRestaurant.roadAddress + ' (${selectedRestaurant.distance}m)',
-                        ),
-                        Text(
-                          selectedRestaurant.placeCategory.fullName,
-                        ),
-                        Text(
-                          selectedRestaurant.placeName,
-                        ),
-                        const Expanded(child: SizedBox()),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: (){
-                                setStateDialogue(() {
-                                  final int random = math.Random().nextInt(_placeController.restaurants.length);
-                                  selectedRestaurant = _placeController.restaurants[random];
-                                });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.black)
-                                ),
-                                child: const Icon(
-                                  Icons.refresh,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10,),
-                            InkWell(
-                              onTap: (){
-                                Navigator.pop(builderContext, selectedRestaurant);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
-                                decoration: const BoxDecoration(
-                                    color: Colors.black
-                                ),
-                                child: const Text(
-                                  '선택',
-                                  style: TextStyle(
-                                      color: Colors.white
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    );
-                  },
-                ),
-              ),
-            );
-          }
-      );
+      final destination = await basic(selectedRestaurant, _placeController);
 
       if(destination != null){
 
@@ -186,14 +153,10 @@ class HomeScreenController with ChangeNotifier{
 
   onCurrentLocationButtonTap() async{
     final LatLng current = await _userLocationController.getCurrentPosition();
-    final ScreenCoordinate sc = await googleMapController.getScreenCoordinate(current);
-
     googleMapController.moveCamera(CameraUpdate.newLatLng(current));
+    final ScreenCoordinate sc = await googleMapController.getScreenCoordinate(current);
     _setMyLocationButton(sc);
-    // googleMapController.mo
   }
-
-
 
   _setMyLocationButton(ScreenCoordinate sc){
     if(Platform.isAndroid){
@@ -207,11 +170,20 @@ class HomeScreenController with ChangeNotifier{
     }
   }
 
+  Color _getRandomColor(){
+    final math.Random random = math.Random();
+    final int r = random.nextInt(255);
+    final int g = random.nextInt(255);
+    final int b = random.nextInt(255);
+    return Color.fromRGBO(r, g, b, 1);
+  }
+
   @override
   void dispose() {
     super.dispose();
     myLocationInScreen.close();
     markerStream.close();
+    isSelectedStream.close();
   }
 
 }
