@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:eat_this/src/data/models/category.dart';
 import 'package:eat_this/src/data/models/restaurant.dart';
 import 'package:eat_this/src/data/repositories/restaurant_repository_impl.dart';
 
@@ -30,6 +31,10 @@ class PlaceController{
 
   Future<void> setRestaurants ({required double lat, required double lng, int radius = 500}) async{
     restaurants = await _restaurantRepositoryImpl.getRestaurantsWithinCircle(lat: lat, lng: lng, radius: radius);
+  }
+
+  Future<List<Category>> getSortedRestaurantsByCategory({required double lat, required double lng, int radius = 500}) async{
+    return await _restaurantRepositoryImpl.getRestaurantsSortedByCategory(lat: lat, lng: lng, radius: radius);
   }
 
 
