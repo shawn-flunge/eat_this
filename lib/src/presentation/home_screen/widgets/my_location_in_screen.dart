@@ -12,6 +12,10 @@ class MyLocationInScreen extends StatelessWidget {
     final HomeScreenController controller = HomeScreenController();
     return StreamBuilder<Offset>(
       stream: controller.myLocationInScreen.stream,
+      initialData: Offset(
+        MediaQuery.of(context).size.width/2 -15,
+        MediaQuery.of(context).size.height/2 -15,
+      ),
       builder: (context, snapShot){
         return Positioned(
           left: snapShot.data?.dx ?? 0,

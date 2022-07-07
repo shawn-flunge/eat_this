@@ -264,13 +264,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   controller.onMapCreated(googleMapController, pixelRatio);
                 },
                 onCameraMove: controller.onCameraMove,
+                onTap: controller.onTap,
               );
             }
           ),
           const MyLocationInScreen(),
           Positioned(
             right: 10,
-            bottom: 100,
+            bottom: 170,
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -341,15 +342,73 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Positioned(
-            left: 0,
+            right: 10,
             bottom: 100,
-            child: MaterialButton(
-              color: Colors.black,
-              onPressed: (){
-                controller.callNewApi();
-              },
+            child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 10
+                      )
+                    ]
+                ),
+                child: InkWell(
+                  onTap: controller.callNewApi,
+                  child: const Icon(
+                    Icons.category,
+                  ),
+                )
             ),
-          )
+          ),
+          StreamBuilder<bool>(
+            stream: controller.isSelectedSteam.stream,
+            initialData: false,
+            builder: (context, snapshot) {
+              return AnimatedPositioned(
+                duration: const Duration(milliseconds: 500),
+                top: (snapshot.data ?? false) ? 70 : -150,
+                left: 0,
+                right: 0,
+                child: Container(
+                  // height: 50,
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            blurRadius: 10
+                        )
+                      ]
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          (snapshot.data ?? false) ? controller.selectedRestaurant.placeName : '',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                          (snapshot.data ?? false) ? controller.selectedRestaurant.roadAddress : ''
+                      ),
+                      Text(
+                          (snapshot.data ?? false) ? controller.selectedRestaurant.placeCategory.fullName : ''
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          ),
+
+
+
         ],
       ),
     );

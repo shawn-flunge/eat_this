@@ -1,4 +1,5 @@
 
+import 'package:eat_this/src/data/models/category.dart';
 import 'package:eat_this/src/data/models/restaurant.dart';
 import 'package:eat_this/src/data/repositories/repository_impl_frame.dart';
 import 'package:eat_this/src/domain/repositories/restaurant_repository.dart';
@@ -28,8 +29,8 @@ class RestaurantRepositoryImpl extends RepositoryImplFrame with RestaurantReposi
     try{
 
       final response = await restClient.getRestaurantsSortedByCategory(lat, lng, radius);
-      print(response);
-
+      final List<Category> result = response.map((e) => Category.fromJson(e)).cast<Category>().toList();
+      return result;
     } catch(error){
       print(error);
     }
